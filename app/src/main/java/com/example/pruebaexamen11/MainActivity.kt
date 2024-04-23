@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -25,6 +26,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
@@ -67,7 +69,9 @@ fun Principal (modifier: Modifier = Modifier, loterias: ArrayList<LoteriaTipo>, 
 
         PantallaTextField(viewModelLoteria = viewModelLoteria)
 
-        pantallaTexto(uiState = uiState)
+        BotonJugarLoteria()
+
+        PantallaTexto(uiState = uiState)
     }
 }
 
@@ -78,7 +82,8 @@ fun PantallaLoterias(modifier: Modifier = Modifier, loterias: ArrayList<LoteriaT
             horizontalArrangement= Arrangement.Center,
             verticalArrangement = Arrangement.Center){
             items(loterias){loteria->
-                Card(modifier = Modifier.padding(5.dp)) {
+                Card(modifier = Modifier.width(275.dp)
+                    .padding(8.dp)) {
                     Text(text = "Nombre: ${loteria.nombre}",
                         modifier = Modifier
                             .background(Color.Yellow)
@@ -89,7 +94,9 @@ fun PantallaLoterias(modifier: Modifier = Modifier, loterias: ArrayList<LoteriaT
                             .background(Color.Cyan)
                             .padding(20.dp)
                             .fillMaxWidth())
-                    Button(onClick = { viewModelLoteria.realizarApuesta(loteria, loterias, viewModelLoteria.dineroApostado) }) {
+                    Button(onClick = { viewModelLoteria.realizarApuesta(loteria, loterias, viewModelLoteria.dineroApostado) },
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                            .width(200.dp)) {
                         Text(text = "Apostar")
                     }
                 }
@@ -107,24 +114,36 @@ fun PantallaTextField(modifier: Modifier = Modifier, viewModelLoteria: LoteriaVi
             label = { Text(text = "Loteria")},
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next)
+                imeAction = ImeAction.Next),
+            modifier = modifier.weight(1f)
+                .padding(10.dp)
         )
         TextField(value = viewModelLoteria.dineroApostado,
             onValueChange = { viewModelLoteria.apuestaDinero(it) },
             label = { Text(text = "Dinero apostado")},
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next)
+                imeAction = ImeAction.Next),
+            modifier = modifier.weight(1f)
+                .padding(10.dp)
         )
+    }
+}
+@Composable
+fun BotonJugarLoteria(modifier: Modifier = Modifier){
+    Button(onClick = { },
+        modifier = modifier.width(350.dp)
+            .padding(8.dp)) {
+        Text(text = "Jugar loteria escrita")
     }
 }
 
 @Composable
-fun pantallaTexto(uiState: LoteriaUiState){
+fun PantallaTexto(uiState: LoteriaUiState){
     Column (modifier = Modifier
         .fillMaxWidth()
         .background(Color.LightGray)
-        .padding(10.dp)) {
+        .padding(50.dp)) {
         Text(text = "${uiState.textoUltimaAccion}",
             modifier = Modifier
                 .fillMaxWidth()
