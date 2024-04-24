@@ -159,7 +159,7 @@ fun PantallaTexto(uiState: LoteriaUiState){
         Text(text = "${uiState.textoDineroGanado}",
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.LightGray))
+                .background(Color.Gray))
     }
 }
 
