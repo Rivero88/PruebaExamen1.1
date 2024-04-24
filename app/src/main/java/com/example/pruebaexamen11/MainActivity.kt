@@ -57,7 +57,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Principal (modifier: Modifier = Modifier, loterias: ArrayList<LoteriaTipo>, viewModelLoteria: LoteriaViewModel){
+fun Principal (modifier: Modifier = Modifier, loterias: ArrayList<LoteriaTipo>,
+               viewModelLoteria: LoteriaViewModel){
     val uiState by viewModelLoteria.uiState.collectAsState()
     Column (modifier){
         Text(text = "Bienvenido a apuestas Ester Rivero.",
@@ -69,20 +70,23 @@ fun Principal (modifier: Modifier = Modifier, loterias: ArrayList<LoteriaTipo>, 
 
         PantallaTextField(viewModelLoteria = viewModelLoteria)
 
-        BotonJugarLoteria()
+        BotonJugarLoteria(viewModelLoteria = viewModelLoteria, loterias = loterias)
 
         PantallaTexto(uiState = uiState)
     }
 }
 
 @Composable
-fun PantallaLoterias(modifier: Modifier = Modifier, loterias: ArrayList<LoteriaTipo>,viewModelLoteria: LoteriaViewModel){
+fun PantallaLoterias(modifier: Modifier = Modifier, loterias: ArrayList<LoteriaTipo>,
+                     viewModelLoteria: LoteriaViewModel){
+
     Column(modifier.height(200.dp)) {
         LazyHorizontalGrid(rows = GridCells.Fixed(1),
             horizontalArrangement= Arrangement.Center,
             verticalArrangement = Arrangement.Center){
             items(loterias){loteria->
-                Card(modifier = Modifier.width(275.dp)
+                Card(modifier = Modifier
+                    .width(275.dp)
                     .padding(8.dp)) {
                     Text(text = "Nombre: ${loteria.nombre}",
                         modifier = Modifier
@@ -95,7 +99,8 @@ fun PantallaLoterias(modifier: Modifier = Modifier, loterias: ArrayList<LoteriaT
                             .padding(20.dp)
                             .fillMaxWidth())
                     Button(onClick = { viewModelLoteria.realizarApuesta(loteria, loterias, viewModelLoteria.dineroApostado) },
-                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                        modifier = Modifier
+                            .align(alignment = Alignment.CenterHorizontally)
                             .width(200.dp)) {
                         Text(text = "Apostar")
                     }
@@ -115,7 +120,8 @@ fun PantallaTextField(modifier: Modifier = Modifier, viewModelLoteria: LoteriaVi
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next),
-            modifier = modifier.weight(1f)
+            modifier = modifier
+                .weight(1f)
                 .padding(10.dp)
         )
         TextField(value = viewModelLoteria.dineroApostado,
@@ -124,15 +130,19 @@ fun PantallaTextField(modifier: Modifier = Modifier, viewModelLoteria: LoteriaVi
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next),
-            modifier = modifier.weight(1f)
+            modifier = modifier
+                .weight(1f)
                 .padding(10.dp)
         )
     }
 }
 @Composable
-fun BotonJugarLoteria(modifier: Modifier = Modifier){
-    Button(onClick = { },
-        modifier = modifier.width(350.dp)
+fun BotonJugarLoteria(modifier: Modifier = Modifier, viewModelLoteria: LoteriaViewModel,
+                      loterias: ArrayList<LoteriaTipo>){
+    Button(onClick = { viewModelLoteria.realizarApuestaLoteriaSeleccionada(viewModelLoteria.loteriaSeleccionada,
+        loterias,viewModelLoteria.dineroApostado)},
+        modifier = modifier
+            .width(350.dp)
             .padding(8.dp)) {
         Text(text = "Jugar loteria escrita")
     }
@@ -148,11 +158,11 @@ fun PantallaTexto(uiState: LoteriaUiState){
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Magenta))
-        Text(text = "${uiState.textoJugado}",
+        Text(text = "${uiState.textoPartidasJugadas}",
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White))
-        Text(text = "${uiState.textoDineroGastado}",
+        Text(text = "${uiState.textoDineroApostado}",
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Yellow))

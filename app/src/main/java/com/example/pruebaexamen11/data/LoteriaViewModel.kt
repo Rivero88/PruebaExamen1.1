@@ -8,13 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.random.Random
 
 class LoteriaViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(LoteriaUiState())
     val uiState: StateFlow<LoteriaUiState> = _uiState.asStateFlow()
 
     var loteriaSeleccionada by mutableStateOf("")
-    var dineroApostado by mutableStateOf("")
+    var dineroApostado by mutableStateOf("0")
 
     fun selectLoteria (loteriaElegida: String){
         loteriaSeleccionada = loteriaElegida
@@ -25,34 +26,70 @@ class LoteriaViewModel: ViewModel() {
 
     fun realizarApuesta (loteriaSeleccionada: LoteriaTipo,loterias: ArrayList<LoteriaTipo>, dineroString: String){
         var dineroInt = dineroString.toInt()
-        var contador by mutableStateOf(0)
-        var textoUltimaAccionActualizar = ""
-        var textoJugadoActualizar = ""
-        var textoDineroGastadoAct = ""
+        var contadorAct = _uiState.value.contador
+        var dineroTotalApostadoAct = _uiState.value.dineroTotalApostado
+        var numAleatorioAsignado = Random.nextInt(1,4)
+        var numAleatorioGanador = Random.nextInt(1,4)
+        var textoUltimaAccionAct = ""
+        var textoPartidasJugadasAct = ""
+        var textoDineroApostadoAct = ""
         var textoDineroGanadoAct = ""
+
 
         for(boleto in loterias) {
             if (boleto.nombre == loteriaSeleccionada.nombre) {
                 if (dineroInt > 0) {
-                    boleto.apuestaDinero += dineroInt
-                    contador = contador++  /** No funciona*/
-                    boleto.dineroTotalApostado += dineroInt
-                    /**funciona*/textoUltimaAccionActualizar += "Has jugado a la lotería ${boleto.nombre} $dineroInt €"
-                    /**No funciona*/textoJugadoActualizar += "Has jugado $contador veces a la lotería."
-                    /**funciona, pero no muestra total de todas porque aquí estoy buscando por nombre. Hacer de otra manera.*/
-                    textoDineroGastadoAct += "Has gastado ${boleto.dineroTotalApostado} euros en lotería"
-                    /**hacerlo*/textoDineroGanadoAct += ""
+                    contadorAct++
+                    textoUltimaAccionAct += "Has jugado a la lotería ${boleto.nombre} $dineroInt €"
+
+                    textoPartidasJugadasAct += "Has jugado $contadorAct veces a la lotería."
+
+                    dineroTotalApostadoAct += dineroInt
+                    textoDineroApostadoAct += "Has gastado $dineroTotalApostadoAct € en lotería."
+
+                    if(numAleatorioAsignado == numAleatorioGanador){
+                        textoDineroGanadoAct += "Has ganado ${dineroInt * boleto.premio} €."
+                    }else{
+                        textoDineroGanadoAct += "Has perdido $dineroInt €."
+                    }
+                }else{
+                    textoUltimaAccionAct += "No se puede comprar una lotería con 0 €."
                 }
             }
         }
 
         _uiState.update {
-                actualizarTexto -> actualizarTexto.copy(
-            textoUltimaAccion = textoUltimaAccionActualizar,
-            textoJugado = textoJugadoActualizar,
-            textoDineroGastado = textoDineroGastadoAct,
-            textoDineroGanado = textoDineroGanadoAct
-        )
+            actualizarTexto -> actualizarTexto.copy(
+                textoUltimaAccion = textoUltimaAccionAct,
+                textoPartidasJugadas = textoPartidasJugadasAct,
+                textoDineroApostado = textoDineroApostadoAct,
+                textoDineroGanado = textoDineroGanadoAct,
+                contador = contadorAct,
+                dineroTotalApostado = dineroTotalApostadoAct,
+            )
+        }
+    }
+
+    fun realizarApuestaLoteriaSeleccionada (loteriaTextEditor: String, loterias: ArrayList<LoteriaTipo>, dineroString: String) {
+        var textoUltimaAccionAct = ""
+        var existe: Boolean = false
+        var loteriaTipo: LoteriaTipo = LoteriaTipo("",0,0)
+
+        for (boleto in loterias){
+            if(boleto.nombre.equals(loteriaTextEditor,ignoreCase = true)){
+                existe = true
+                loteriaTipo=boleto.copy()
+            }
+        }
+        if(existe){
+            realizarApuesta(loteriaTipo,loterias,dineroString)
+        }else{
+            textoUltimaAccionAct += "No existe ninguna lotería con ese nombre."
+            _uiState.update {
+                    actualizarTexto -> actualizarTexto.copy(
+                textoUltimaAccion = textoUltimaAccionAct
+            )
+            }
         }
     }
 }
