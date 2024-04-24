@@ -24,7 +24,8 @@ class LoteriaViewModel: ViewModel() {
         dineroApostado = dineroGastado
     }
 
-    fun realizarApuesta (loteriaSeleccionada: LoteriaTipo,loterias: ArrayList<LoteriaTipo>, dineroString: String){
+    fun realizarApuesta (loteriaSeleccionada: LoteriaTipo,loterias: ArrayList<LoteriaTipo>,
+                         dineroString: String){
         var dineroInt = dineroString.toInt()
         var contadorAct = _uiState.value.contador
         var dineroTotalApostadoAct = _uiState.value.dineroTotalApostado
@@ -35,10 +36,9 @@ class LoteriaViewModel: ViewModel() {
         var textoDineroApostadoAct = ""
         var textoDineroGanadoAct = ""
 
-
-        for(boleto in loterias) {
-            if (boleto.nombre == loteriaSeleccionada.nombre) {
-                if (dineroInt > 0) {
+        if (dineroInt > 0){
+            for(boleto in loterias) {
+                if (boleto.nombre == loteriaSeleccionada.nombre) {
                     contadorAct++
                     textoUltimaAccionAct += "Has jugado a la lotería ${boleto.nombre} $dineroInt €"
 
@@ -52,28 +52,33 @@ class LoteriaViewModel: ViewModel() {
                     }else{
                         textoDineroGanadoAct += "Has perdido $dineroInt €."
                     }
-                }else{
-                    textoUltimaAccionAct += "No se puede comprar una lotería con 0 €."
                 }
             }
-        }
-
-        _uiState.update {
-            actualizarTexto -> actualizarTexto.copy(
-                textoUltimaAccion = textoUltimaAccionAct,
-                textoPartidasJugadas = textoPartidasJugadasAct,
-                textoDineroApostado = textoDineroApostadoAct,
-                textoDineroGanado = textoDineroGanadoAct,
-                contador = contadorAct,
-                dineroTotalApostado = dineroTotalApostadoAct,
-            )
+            _uiState.update {
+                actualizarTexto -> actualizarTexto.copy(
+                    textoUltimaAccion = textoUltimaAccionAct,
+                    textoPartidasJugadas = textoPartidasJugadasAct,
+                    textoDineroApostado = textoDineroApostadoAct,
+                    textoDineroGanado = textoDineroGanadoAct,
+                    contador = contadorAct,
+                    dineroTotalApostado = dineroTotalApostadoAct
+                )
+            }
+        }else{
+            textoUltimaAccionAct += "No se puede comprar una lotería con 0 €."
+            _uiState.update {
+                actualizarTexto -> actualizarTexto.copy(
+                    textoUltimaAccion = textoUltimaAccionAct
+                )
+            }
         }
     }
 
-    fun realizarApuestaLoteriaSeleccionada (loteriaTextEditor: String, loterias: ArrayList<LoteriaTipo>, dineroString: String) {
+    fun realizarApuestaLoteriaSeleccionada (loteriaTextEditor: String, loterias: ArrayList<LoteriaTipo>,
+                                            dineroString: String) {
         var textoUltimaAccionAct = ""
         var existe: Boolean = false
-        var loteriaTipo: LoteriaTipo = LoteriaTipo("",0,0)
+        var loteriaTipo: LoteriaTipo = LoteriaTipo("",0)
 
         for (boleto in loterias){
             if(boleto.nombre.equals(loteriaTextEditor,ignoreCase = true)){
